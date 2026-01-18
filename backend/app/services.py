@@ -149,19 +149,21 @@ def match_candidate_to_jobs(request: MatchingRequest) -> MatchingResponse:
             experience_score, missing_skills, matched_skills, job.required_skills
         )
 
-        results.append(JobMatchResult(
-            job_id=job.job_id,
-            match_score=round(final_match_score, 1),
-            breakdown=ScoreBreakdown(
-                skill_match=round(skill_score, 1),
-                role_match=round(role_score, 1),
-                location_match=round(location_score, 1),
-                salary_match=round(salary_score, 1),
-                experience_match=round(experience_score, 1)
-            ),
-            missing_skills=missing_skills,
-            recommendation_reason=recommendation_reason
-        ))
+        #Threshold is set so that jobs with low match score are not shown. only the suitable ones are shown in a priority order
+        if final_match_score >= 75:
+            results.append(JobMatchResult(
+                job_id=job.job_id,
+                match_score=round(final_match_score, 1),
+                breakdown=ScoreBreakdown(
+                    skill_match=round(skill_score, 1),
+                    role_match=round(role_score, 1),
+                    location_match=round(location_score, 1),
+                    salary_match=round(salary_score, 1),
+                    experience_match=round(experience_score, 1)
+                ),
+                missing_skills=missing_skills,
+                recommendation_reason=recommendation_reason
+            ))
 
     # Sort results by match score in descending order
     results = sorted(results, key=lambda x: x.match_score, reverse=True)
